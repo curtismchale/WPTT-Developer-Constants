@@ -1,4 +1,4 @@
-# WPTT Basic Email Logging
+# WPTT Developer Constants
 
 Contributors: Curtis McHale
 Tags: wp_mail, email logging
