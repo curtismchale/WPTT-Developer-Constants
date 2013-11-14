@@ -11,6 +11,8 @@ Stable tag: 1.0
 
 Basic plugin that allows you to define constants for live/local/staging.
 
+Ideal for hosting like WPEngine which blows out the staging wp-config.php file when you push live->staging with their tools
+
 ## Installation
 
 1. Extract to your wp-content/mu-plugins/ folder. Create it if it doesn't exist
