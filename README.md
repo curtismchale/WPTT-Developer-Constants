@@ -9,13 +9,15 @@ Stable tag: 1.0
 
 ## Description
 
-Basic plugin that allows you to
+Basic plugin that allows you to define constants for live/local/staging.
 
 ## Installation
 
 1. Extract to your wp-content/mu-plugins/ folder. Create it if it doesn't exist
 
 2. Plugin is always run and won't show up in the WordPress admin
+
+3. Follow this repository for any updates since MU Plugins don't get update notifications.
 
 ## Usage
 
