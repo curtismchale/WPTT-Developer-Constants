@@ -15,7 +15,7 @@ Ideal for hosting like WPEngine which blows out the staging wp-config.php file w
 
 ## Installation
 
-1. Extract to your wp-content/mu-plugins/ folder. Create it if it doesn't exist
+1. Extract to your wp-content/mu-plugins/ folder. Create it if it doesn't exist and just put the .php file in. mu-plugins don't look inside folders.
 
 2. Plugin is always run and won't show up in the WordPress admin
 
