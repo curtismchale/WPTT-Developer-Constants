@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Developers Constants Plugin
-Plugin URI: http://wpthemetutorial.com
-Description: Defines local, live, staging constants
-Version: 1.0
-Author: WP Theme Tutorial, Curtis McHale
+Plugin Name: Developers Plugin
+Plugin URI: http://rapidminer.com
+Description: Defines our local, live, staging url's and sets some constants that deal with configuration.
+Version: 1.1
+Author: SFNdesign, Curtis McHale
 Author URI: http://sfndesign.ca
 License: GPLv2 or later
 */
@@ -28,92 +28,103 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class WPTT_Dev_Constants{
 
 	protected $live = array(
-		'http://your-live-site.com',
+		'http://yourlivesite.com'
 	);
 
 	protected $staging = array(
-		'http://your-live-site.staging',
+		'http://yourstagingsite.com',
 	);
 
 	protected $local = array(
-		'http://your-live-site.local',
+		'http://yourlocalsite.com',
 	);
 
 	function __construct(){
-
-		add_action( 'muplugins_loaded', array( $this, 'define_environment_constants' ) );
-
-		// uncomment the line below to check for any plugins you may want on the site
-		//add_action( 'admin_notices', array( $this, 'check_required_plugins' ) );
 
 		// Register hooks that are fired when the plugin is activated, deactivated, and uninstalled, respectively.
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 		register_uninstall_hook( __FILE__, array( __CLASS__, 'uninstall' ) );
 
+		// these make WPTT Email Logging use the conditionals defined here
+		add_filter( 'wptt_email_logging_is_local', array( $this, 'is_local' ) );
+		add_filter( 'wptt_email_logging_is_staging', array( $this, 'is_staging' ) );
+		add_filter( 'wptt_email_logging_is_live', array( $this, 'is_live' ) );
+
 	} // construct
 
 	/**
-	 * This defines our environment constants so we can easily change configuration based
-	 * on where you are running the site currently.
+	 * Returns true if the current home_url matches with our local var urls
 	 *
-	 * @since 1.0
-	 * @author WP Theme Tutorial, Curtis McHale
+	 * @since 1.1
+	 * @author SFNdesign, Curtis McHale
 	 * @access public
 	 *
-	 * @uses home_url()      Returns the path to the site root (not WP root files)
+	 * @uses home_url()       Returns the home_url of the WordPress site
 	 */
-	public function define_environment_constants(){
+	public function is_local(){
 
 		$site = home_url();
 
-		if ( in_array( $site, $this->live ) ){
+		$local = unserialize( LIVE_ENV );
 
-			define( 'LIVE_ENV', true );
-
-		} elseif ( in_array( $site, $this->staging ) ){
-
-			// catching other users who may have the dev contstant in their wp-config file
-			if( ! defined( 'DEVELOPMENT' ) ) define( 'DEVELOPMENT', true );
-			define( 'STAGING_ENV', true );
-
-		} elseif ( in_array( $site, $this->local ) ){
-
-			// catching other users who may have the dev contstant in their wp-config file
-			if( ! defined( 'DEVELOPMENT' ) ) define( 'DEVELOPMENT', true );
-			define( 'LOCAL_ENV', true );
-
-		} else {
-			// nothing really
+		if ( empty( $local ) ){
+			$local = $this->local;
 		}
 
-	}
+		if ( in_array( $site, $local ) ){
+			return true;
+		}
+
+		return false;
+
+	} // is_local
 
 	/**
-	 * Use the function below to check for any plugins you need on the site.
+	 * Returns true if the current home_url matches with our staging var urls
 	 *
-	 * @uses    function_exists     Checks for the function given string
-	 * @uses    deactivate_plugins  Deactivates plugins given string or array of plugins
+	 * @since 1.1
+	 * @author SFNdesign, Curtis McHale
+	 * @access public
 	 *
-	 * @action  admin_notices       Provides WordPress admin notices
-	 *
-	 * @since   1.0
-	 * @author  WP Theme Tutorial, Curtis McHale
+	 * @uses home_url()       Returns the home_url of the WordPress site
 	 */
-	public function check_required_plugins(){
+	public function is_staging(){
 
-		// just left to show you how to do it
-		if( ! is_plugin_active( 'woocommerce/woocommerce.php' ) ){ ?>
+		$site = home_url();
 
-			<div id="message" class="error">
-				<p>Automatic Product Purchase expects WooCommerce to be active. This plugin has been deactivated.</p>
-			</div>
+		$staging = unserialize( STAGING_ENV );
 
-			<?php
-			deactivate_plugins( '/auto-product-purchase/auto-product-purchase.php' );
-		} // compmany team if
+		if ( empty( $staging ) ){
+			$staging = $this->staging;
+		}
 
-	} // check_required_plugins
+		if ( in_array( $site, $staging ) ){
+			return true;
+		}
+
+		return false;
+
+	} // is_staging
+
+	/**
+	 * Returns true if the current home_url matches with our live var urls
+	 *
+	 * @since 1.1
+	 * @author SFNdesign, Curtis McHale
+	 * @access public
+	 *
+	 * @uses home_url()       Returns the home_url of the WordPress site
+	 */
+	public function is_live(){
+
+		$site = home_url();
+
+		if ( in_array( $site, $this->live ) ) return true;
+
+		return false;
+
+	} // is_live
 
 	/**
 	 * Fired when plugin is activated
@@ -145,3 +156,42 @@ class WPTT_Dev_Constants{
 } // WPTT_Dev_Constants
 
 new WPTT_Dev_Constants();
+
+/**
+ * Wraps the is_local function. Returns true if site matches local defined sites
+ *
+ * @since 1.1
+ * @author SFNdesign, Curtis McHale
+ *
+ * @uses WPTT_Dev_Constants->is_local()      Returns true if home_url matches defined local sites
+ */
+function wptt_is_local(){
+	$var = new WPTT_Dev_Constants();
+	return $var->is_local();
+} // wptt_is_local
+
+/**
+ * Wraps the is_staging function. Returns true if site matches staging defined sites
+ *
+ * @since 1.1
+ * @author SFNdesign, Curtis McHale
+ *
+ * @uses WPTT_Dev_Constants->is_staging()      Returns true if home_url matches defined staging sites
+ */
+function wptt_is_staging(){
+	$var = new WPTT_Dev_Constants();
+	return $var->is_staging();
+} // wptt_is_staging
+
+/**
+ * Wraps the is_live function. Returns true if site matches live defined sites
+ *
+ * @since 1.1
+ * @author SFNdesign, Curtis McHale
+ *
+ * @uses WPTT_Dev_Constants->is_live()      Returns true if home_url matches defined live sites
+ */
+function wptt_is_live(){
+	$var = new WPTT_Dev_Constants();
+	return $var->is_live();
+} // wptt_is_live
