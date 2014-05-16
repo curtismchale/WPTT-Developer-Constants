@@ -38,7 +38,7 @@ $local = array(
 	'http://yourlocalsite.com',
 );
 
-define( 'LIVE_ENV', serialize( $local ) );
+define( 'LOCAL_ENV', serialize( $local ) );
 
 $staging = array(
 	'http://yourstagingsite.com',
