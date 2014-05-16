@@ -66,7 +66,7 @@ class WPTT_Dev_Constants{
 
 		$site = home_url();
 
-		$local = unserialize( LIVE_ENV );
+		$local = unserialize( LOCAL_ENV );
 
 		if ( empty( $local ) ){
 			$local = $this->local;
