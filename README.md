@@ -1,5 +1,12 @@
 # WPTT Developer Constants
 
+
+**DON'T USE THIS**
+Instead use the new `wp_environment_type` functions.
+
+
+
+
 Contributors: Curtis McHale
 Tags: wp_mail, email logging
 Requires at least: 3.6
